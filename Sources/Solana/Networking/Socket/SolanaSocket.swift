@@ -126,51 +126,79 @@ public class SolanaSocket {
 }
 
 extension SolanaSocket: WebSocketDelegate {
-
-    public func didReceive(event: WebSocketEvent, client: WebSocket) {
-        log(event: event)
-        switch event {
-        case .connected:
-            delegate?.connected()
-        case .disconnected(let reason, let code):
-            delegate?.disconnected(reason: reason, code: code)
-        case .text(let string):
-            onText(string: string)
-        case .binary: break
-        case .ping: break
-        case .pong: break
-        case .viabilityChanged: break
-        case .reconnectSuggested: break
-        case .cancelled: break
-        case .error(let error): break
-            self.delegate?.error(error: error)
-        }
+//    public enum WebSocketEvent {
+//        case connected([String: String])
+//        case disconnected(String, UInt16)
+//        case text(String)
+//        case binary(Data)
+//        case pong(Data?)
+//        case ping(Data?)
+//        case error(Error?)
+//        case viabilityChanged(Bool)
+//        case reconnectSuggested(Bool)
+//        case cancelled
+//    }
+    
+    public func websocketDidConnect(socket: Starscream.WebSocketClient) {
+        delegate?.connected()
+    }
+    
+    public func websocketDidDisconnect(socket: Starscream.WebSocketClient, error: Error?) {
+        delegate?.disconnected(reason: error.debugDescription, code: 404)
+    }
+    
+    public func websocketDidReceiveMessage(socket: Starscream.WebSocketClient, text: String) {
+        onText(string: text)
+    }
+    
+    public func websocketDidReceiveData(socket: Starscream.WebSocketClient, data: Data) {
+        
     }
 
-    private func log(event: WebSocketEvent) {
-        switch event {
-        case .connected(let headers):
-            if enableDebugLogs { debugPrint("conected with headers \(headers)") }
-        case .disconnected(let reason, let code):
-            if enableDebugLogs { debugPrint("disconnected with reason \(reason) \(code)") }
-        case .text(let string):
-            if enableDebugLogs { debugPrint("text \(string)") }
-        case .binary:
-            if enableDebugLogs { debugPrint("binary") }
-        case .ping:
-            if enableDebugLogs { debugPrint("ping") }
-        case .pong:
-            if enableDebugLogs { debugPrint("pong") }
-        case .viabilityChanged(let visible):
-            if enableDebugLogs { debugPrint("viabilityChanged \(visible)") }
-        case .reconnectSuggested(let reconnect):
-            if enableDebugLogs { debugPrint("reconnectSuggested \(reconnect)") }
-        case .cancelled:
-            if enableDebugLogs { debugPrint("cancelled") }
-        case .error(let error):
-            if enableDebugLogs { debugPrint("error \(error?.localizedDescription ?? "")") }
-        }
-    }
+//    public func didReceive(event: WebSocketEvent, client: WebSocket) {
+////        log(event: event)
+//        switch event {
+//        case .connected:
+//            delegate?.connected()
+//        case .disconnected(let reason, let code):
+//            delegate?.disconnected(reason: reason, code: code)
+//        case .text(let string):
+//            onText(string: string)
+//        case .binary: break
+//        case .ping: break
+//        case .pong: break
+//        case .viabilityChanged: break
+//        case .reconnectSuggested: break
+//        case .cancelled: break
+//        case .error(let error): break
+//            self.delegate?.error(error: error)
+//        }
+//    }
+
+//    private func log(event: WebSocketEvent) {
+//        switch event {
+//        case .connected(let headers):
+//            if enableDebugLogs { debugPrint("conected with headers \(headers)") }
+//        case .disconnected(let reason, let code):
+//            if enableDebugLogs { debugPrint("disconnected with reason \(reason) \(code)") }
+//        case .text(let string):
+//            if enableDebugLogs { debugPrint("text \(string)") }
+//        case .binary:
+//            if enableDebugLogs { debugPrint("binary") }
+//        case .ping:
+//            if enableDebugLogs { debugPrint("ping") }
+//        case .pong:
+//            if enableDebugLogs { debugPrint("pong") }
+//        case .viabilityChanged(let visible):
+//            if enableDebugLogs { debugPrint("viabilityChanged \(visible)") }
+//        case .reconnectSuggested(let reconnect):
+//            if enableDebugLogs { debugPrint("reconnectSuggested \(reconnect)") }
+//        case .cancelled:
+//            if enableDebugLogs { debugPrint("cancelled") }
+//        case .error(let error):
+//            if enableDebugLogs { debugPrint("error \(error?.localizedDescription ?? "")") }
+//        }
+//    }
 
     private func onText(string: String) {
         guard let data = string.data(using: .utf8) else { return }
