@@ -42,7 +42,8 @@ extension Action {
                     }
                 }
             case .failure(let error):
-                if case SolanaError.nullValue = error {
+                switch error {
+                case SolanaError.nullValue:
                     self.createAssociatedTokenAccount(
                         for: owner,
                         tokenMint: tokenMint,
@@ -57,9 +58,29 @@ extension Action {
                             return
                         }
                     }
+                default:
+                    onComplete(.failure(error))
+                    return
                 }
-                onComplete(.failure(error))
-                return
+                
+//                if case SolanaError.nullValue = error {
+//                    self.createAssociatedTokenAccount(
+//                        for: owner,
+//                        tokenMint: tokenMint,
+//                        payer: payer
+//                    ) { createAssociatedResult in
+//                        switch createAssociatedResult {
+//                        case .success(let transactionId):
+//                            onComplete(.success((transactionId: transactionId, associatedTokenAddress: associatedAddress)))
+//                            return
+//                        case .failure(let error):
+//                            onComplete(.failure(error))
+//                            return
+//                        }
+//                    }
+//                } else {
+//
+//                }
             }
         }
     }
