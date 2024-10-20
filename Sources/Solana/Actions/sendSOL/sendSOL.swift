@@ -70,10 +70,11 @@ public extension Action {
     func sendSOL(
         to destination: String,
         from: Signer,
-        amount: UInt64
+        amount: UInt64,
+        allowUnfundedRecipient: Bool = false
     ) async throws -> TransactionID {
         try await withCheckedThrowingContinuation { c in
-            self.sendSOL(to: destination, from: from, amount: amount, onComplete: c.resume(with:))
+            self.sendSOL(to: destination, from: from, amount: amount, allowUnfundedRecipient: allowUnfundedRecipient, onComplete: c.resume(with:))
         }
     }
 }
